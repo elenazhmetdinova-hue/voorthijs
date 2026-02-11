@@ -1,242 +1,121 @@
-// Initialize configuration
-const config = window.VALENTINE_CONFIG;
+const yesBtn = document.getElementById("yesBtn");
+const noBtn = document.getElementById("noBtn");
+const btnArea = document.getElementById("btnArea");
+const result = document.getElementById("result");
+const resultTitle = document.getElementById("resultTitle");
+const resultText = document.getElementById("resultText");
+const noteBtn = document.getElementById("noteBtn");
+const note = document.getElementById("note");
+const nameTo = document.getElementById("nameTo");
 
-// Validate configuration
-function validateConfig() {
-    const warnings = [];
+nameTo.textContent = "Thijs";
 
-    // Check required fields
-    if (!config.valentineName) {
-        warnings.push("Valentine's name is not set! Using default.");
-        config.valentineName = "My Love";
-    }
+let yesScale = 1;
 
-    // Validate colors
-    const isValidHex = (hex) => /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(hex);
-    Object.entries(config.colors).forEach(([key, value]) => {
-        if (!isValidHex(value)) {
-            warnings.push(`Invalid color for ${key}! Using default.`);
-            config.colors[key] = getDefaultColor(key);
-        }
-    });
+// Place the NO button nicely on load
+placeNoButton(0.68, 0.5);
 
-    // Validate animation values
-    if (parseFloat(config.animations.floatDuration) < 5) {
-        warnings.push("Float duration too short! Setting to 5s minimum.");
-        config.animations.floatDuration = "5s";
-    }
+// YES click
+yesBtn.addEventListener("click", () => {
+  result.hidden = false;
+  btnArea.style.display = "none";
 
-    if (config.animations.heartExplosionSize < 1 || config.animations.heartExplosionSize > 3) {
-        warnings.push("Heart explosion size should be between 1 and 3! Using default.");
-        config.animations.heartExplosionSize = 1.5;
-    }
+  resultTitle.textContent = "Aww! I'm the luckiest homikje now! 💖";
+  resultText.textContent = "Okayyy then… open the small note 😇";
 
-    // Log warnings if any
-    if (warnings.length > 0) {
-        console.warn("⚠️ Configuration Warnings:");
-        warnings.forEach(warning => console.warn("- " + warning));
-    }
-}
-
-// Default color values
-function getDefaultColor(key) {
-    const defaults = {
-        backgroundStart: "#ffafbd",
-        backgroundEnd: "#ffc3a0",
-        buttonBackground: "#ff6b6b",
-        buttonHover: "#ff8787",
-        textColor: "#ff4757"
-    };
-    return defaults[key];
-}
-
-// Set page title
-document.title = config.pageTitle;
-
-// Initialize the page content when DOM is loaded
-window.addEventListener('DOMContentLoaded', () => {
-    // Validate configuration first
-    validateConfig();
-
-    // Set texts from config
-    document.getElementById('valentineTitle').textContent = `${config.valentineName}, my love...`;
-    
-    // Set first question texts
-    document.getElementById('question1Text').textContent = config.questions.first.text;
-    document.getElementById('yesBtn1').textContent = config.questions.first.yesBtn;
-    document.getElementById('noBtn1').textContent = config.questions.first.noBtn;
-    document.getElementById('secretAnswerBtn').textContent = config.questions.first.secretAnswer;
-    
-    // Set second question texts
-    document.getElementById('question2Text').textContent = config.questions.second.text;
-    document.getElementById('startText').textContent = config.questions.second.startText;
-    document.getElementById('nextBtn').textContent = config.questions.second.nextBtn;
-    
-    // Set third question texts
-    document.getElementById('question3Text').textContent = config.questions.third.text;
-    document.getElementById('yesBtn3').textContent = config.questions.third.yesBtn;
-    document.getElementById('noBtn3').textContent = config.questions.third.noBtn;
-
-    // Create initial floating elements
-    createFloatingElements();
-
-    // Setup music player
-    setupMusicPlayer();
+  createHeartsBurst();
 });
 
-// Create floating hearts and bears
-function createFloatingElements() {
-    const container = document.querySelector('.floating-elements');
-    
-    // Create hearts
-    config.floatingEmojis.hearts.forEach(heart => {
-        const div = document.createElement('div');
-        div.className = 'heart';
-        div.innerHTML = heart;
-        setRandomPosition(div);
-        container.appendChild(div);
-    });
-
-    // Create bears
-    config.floatingEmojis.bears.forEach(bear => {
-        const div = document.createElement('div');
-        div.className = 'bear';
-        div.innerHTML = bear;
-        setRandomPosition(div);
-        container.appendChild(div);
-    });
-}
-
-// Set random position for floating elements
-function setRandomPosition(element) {
-    element.style.left = Math.random() * 100 + 'vw';
-    element.style.animationDelay = Math.random() * 5 + 's';
-    element.style.animationDuration = 10 + Math.random() * 20 + 's';
-}
-
-// Function to show next question
-function showNextQuestion(questionNumber) {
-    document.querySelectorAll('.question-section').forEach(q => q.classList.add('hidden'));
-    document.getElementById(`question${questionNumber}`).classList.remove('hidden');
-}
-
-// Function to move the "No" button when clicked
-function moveButton(button) {
-    const x = Math.random() * (window.innerWidth - button.offsetWidth);
-    const y = Math.random() * (window.innerHeight - button.offsetHeight);
-    button.style.position = 'fixed';
-    button.style.left = x + 'px';
-    button.style.top = y + 'px';
-}
-
-// Love meter functionality
-const loveMeter = document.getElementById('loveMeter');
-const loveValue = document.getElementById('loveValue');
-const extraLove = document.getElementById('extraLove');
-
-function setInitialPosition() {
-    loveMeter.value = 100;
-    loveValue.textContent = 100;
-    loveMeter.style.width = '100%';
-}
-
-loveMeter.addEventListener('input', () => {
-    const value = parseInt(loveMeter.value);
-    loveValue.textContent = value;
-    
-    if (value > 100) {
-        extraLove.classList.remove('hidden');
-        const overflowPercentage = (value - 100) / 9900;
-        const extraWidth = overflowPercentage * window.innerWidth * 0.8;
-        loveMeter.style.width = `calc(100% + ${extraWidth}px)`;
-        loveMeter.style.transition = 'width 0.3s';
-        
-        // Show different messages based on the value
-        if (value >= 5000) {
-            extraLove.classList.add('super-love');
-            extraLove.textContent = config.loveMessages.extreme;
-        } else if (value > 1000) {
-            extraLove.classList.remove('super-love');
-            extraLove.textContent = config.loveMessages.high;
-        } else {
-            extraLove.classList.remove('super-love');
-            extraLove.textContent = config.loveMessages.normal;
-        }
-    } else {
-        extraLove.classList.add('hidden');
-        extraLove.classList.remove('super-love');
-        loveMeter.style.width = '100%';
-    }
+// NO dodges (works on desktop + mobile)
+["mouseenter", "touchstart"].forEach((evt) => {
+  noBtn.addEventListener(evt, (e) => {
+    e.preventDefault();
+    dodgeNoButton();
+    growYesButton();
+  }, { passive: false });
 });
 
-// Initialize love meter
-window.addEventListener('DOMContentLoaded', setInitialPosition);
-window.addEventListener('load', setInitialPosition);
+function dodgeNoButton() {
+  const area = btnArea.getBoundingClientRect();
 
-// Celebration function
-function celebrate() {
-    document.querySelectorAll('.question-section').forEach(q => q.classList.add('hidden'));
-    const celebration = document.getElementById('celebration');
-    celebration.classList.remove('hidden');
-    
-    // Set celebration messages
-    document.getElementById('celebrationTitle').textContent = config.celebration.title;
-    document.getElementById('celebrationMessage').textContent = config.celebration.message;
-    document.getElementById('celebrationEmojis').textContent = config.celebration.emojis;
-    
-    // Create heart explosion effect
-    createHeartExplosion();
+  // keep button inside container
+  const padding = 6;
+  const maxX = area.width - noBtn.offsetWidth - padding;
+  const maxY = area.height - noBtn.offsetHeight - padding;
+
+  // random position
+  const x = clamp(rand(0, maxX), padding, maxX);
+  const y = clamp(rand(0, maxY), padding, maxY);
+
+  noBtn.style.position = "absolute";
+  noBtn.style.left = `${x}px`;
+  noBtn.style.top = `${y}px`;
+
+  // tiny wiggle for fun
+  noBtn.animate(
+    [
+      { transform: "translateX(0px)" },
+      { transform: "translateX(-6px)" },
+      { transform: "translateX(6px)" },
+      { transform: "translateX(0px)" },
+    ],
+    { duration: 220, easing: "ease-out" }
+  );
 }
 
-// Create heart explosion animation
-function createHeartExplosion() {
-    for (let i = 0; i < 50; i++) {
-        const heart = document.createElement('div');
-        const randomHeart = config.floatingEmojis.hearts[Math.floor(Math.random() * config.floatingEmojis.hearts.length)];
-        heart.innerHTML = randomHeart;
-        heart.className = 'heart';
-        document.querySelector('.floating-elements').appendChild(heart);
-        setRandomPosition(heart);
-    }
+function growYesButton() {
+  yesScale = Math.min(yesScale + 0.12, 2.0);
+  yesBtn.style.transform = `scale(${yesScale})`;
 }
 
-// Music Player Setup
-function setupMusicPlayer() {
-    const musicControls = document.getElementById('musicControls');
-    const musicToggle = document.getElementById('musicToggle');
-    const bgMusic = document.getElementById('bgMusic');
-    const musicSource = document.getElementById('musicSource');
+// Love note reveal
+noteBtn.addEventListener("click", () => {
+  note.hidden = false;
+  noteBtn.style.display = "none";
 
-    // Only show controls if music is enabled in config
-    if (!config.music.enabled) {
-        musicControls.style.display = 'none';
-        return;
-    }
+  note.innerHTML = `
+    <p>
+      Count yourself lucky as well cause you are invited for a date at
+      <strong>17:00 on Feb 14</strong> at <strong>Archibald!</strong> 💌
+    </p>
+  `;
+});
 
-    // Set music source and volume
-    musicSource.src = config.music.musicUrl;
-    bgMusic.volume = config.music.volume || 0.5;
-    bgMusic.load();
+// Helpers
+function rand(min, max) {
+  return Math.random() * (max - min) + min;
+}
 
-    // Try autoplay if enabled
-    if (config.music.autoplay) {
-        const playPromise = bgMusic.play();
-        if (playPromise !== undefined) {
-            playPromise.catch(error => {
-                console.log("Autoplay prevented by browser");
-                musicToggle.textContent = config.music.startText;
-            });
-        }
-    }
+function clamp(v, min, max) {
+  return Math.max(min, Math.min(max, v));
+}
 
-    // Toggle music on button click
-    musicToggle.addEventListener('click', () => {
-        if (bgMusic.paused) {
-            bgMusic.play();
-            musicToggle.textContent = config.music.stopText;
-        } else {
-            bgMusic.pause();
-            musicToggle.textContent = config.music.startText;
-        }
-    });
-} 
+function placeNoButton(xRatio, yRatio) {
+  // place relative to container
+  const area = btnArea.getBoundingClientRect();
+  const x = area.width * xRatio - noBtn.offsetWidth / 2;
+  const y = area.height * yRatio - noBtn.offsetHeight / 2;
+
+  noBtn.style.position = "absolute";
+  noBtn.style.left = `${x}px`;
+  noBtn.style.top = `${y}px`;
+}
+
+// Cute heart burst when YES is clicked
+function createHeartsBurst() {
+  for (let i = 0; i < 22; i++) {
+    const heart = document.createElement("div");
+    heart.textContent = ["💖", "💘", "❤️", "💕"][Math.floor(Math.random() * 4)];
+    heart.style.position = "fixed";
+    heart.style.left = Math.random() * 100 + "vw";
+    heart.style.top = "100vh";
+    heart.style.fontSize = Math.random() * 18 + 18 + "px";
+    heart.style.animation = "floatUp 3.2s linear forwards";
+    document.body.appendChild(heart);
+
+    setTimeout(() => heart.remove(), 3200);
+  }
+}
+
+// Re-position NO button after resize (keeps it in bounds)
+window.addEventListener("resize", () => placeNoButton(0.68, 0.5));
