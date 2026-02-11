@@ -3,46 +3,30 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Be My Valentine 💘</title>
+  <title>Valentine 💘</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="hearts" aria-hidden="true">
-    <span class="heart"></span><span class="heart"></span><span class="heart"></span>
-    <span class="heart"></span><span class="heart"></span><span class="heart"></span>
-    <span class="heart"></span><span class="heart"></span><span class="heart"></span>
-    <span class="heart"></span><span class="heart"></span><span class="heart"></span>
-  </div>
+  <!-- Screen 1 -->
+  <main class="screen" id="screen1">
+    <h1 class="title">
+      <span class="name">Thijs!</span><br />
+      Will you be my Valentine?
+    </h1>
 
-  <main class="card" role="main">
-    <p class="badge">💌 Valentine Special</p>
-
-    <h1>Hey <span id="nameTo">Thijs</span>…</h1>
-    <p class="subtitle">I made you a tiny website because I’m cheesy like that.</p>
-
-    <section class="question">
-      <h2 id="questionTitle">Will you be my Valentine? 💖</h2>
-
-      <div class="btn-area" id="btnArea">
-        <button class="btn yes" id="yesBtn">Yes 😍</button>
-        <button class="btn no" id="noBtn">No 🙃</button>
-      </div>
-
-      <p class="hint" id="hint">Try pressing “No”… if you can 😇</p>
-    </section>
-
-    <section class="result" id="result" hidden>
-      <h2 id="resultTitle"></h2>
-      <p id="resultText"></p>
-
-      <button class="btn note" id="noteBtn">Open small note 💌</button>
-
-      <div class="note" id="note" hidden></div>
-    </section>
+    <div class="button-area" id="buttonArea" aria-label="Answer buttons">
+      <button class="btn yes" id="yesBtn">Yes</button>
+      <button class="btn no" id="noBtn">No</button>
+    </div>
   </main>
 
-  <script src="script.js"></script>
-</body>
-</html>
+  <!-- Screen 2 -->
+  <main class="screen hidden" id="screen2">
+    <h1 class="title">Aww! I'm the happiest homikje alive! 💖</h1>
+    <p class="subtitle">Here is a small note for you...</p>
+    <button class="btn note" id="goNoteBtn">Open note 💌</button>
+  </main>
 
-</html> 
+  <!-- Screen 3 -->
+  <main class="screen hidden" id="screen3">
+    <h1 class="title">💌
